@@ -1,13 +1,12 @@
 #ifndef _HUNGARIAN_
 #define _HUNGARIAN_
 
-#define MAX 10000
-
 #include <list>
 #include <string>
 #include <vector>
 #include <queue>
 #include <iostream>
+#include <limits>
 
 
 using namespace std;
@@ -202,7 +201,7 @@ public:
     int sizenT = (int)nT.size();
 
     //calculate alpha
-    int alpha = MAX;
+    int alpha = std::numeric_limits<int>::max();
     for (int i=0; i<sizeS; i++)
     {
       int x = S[i];
