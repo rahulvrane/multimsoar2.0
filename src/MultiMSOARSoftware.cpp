@@ -441,17 +441,26 @@ int main(int argc, char** argv)
 
 	// Launch parallel family processing
 	vector<future<void>> family_futures;
+
+	// Create local references to avoid lambda capture warnings
+	const map<string,int>& species_ref = species;
+	const map<string, vector<string>>& adjacency_ref = adjacency;
+	const map<pair<string,string>, double>& edges_ref = edges;
+	const string& speciesTree_ref = speciesTree;
+	const int S_val = S;
+
 	for(map<int,set<string> >::iterator it=RealFamily.begin(); it!=RealFamily.end(); it++)
 	{
 		int family_id = it->first;
 		set<string> family_genes = it->second;
 
 		// Enqueue family processing task
-		family_futures.push_back(family_pool.enqueue([family_id, family_genes, &species,
-		                                              &adjacency, &edges, &speciesTree,
-		                                              S, &aggregator, &orthoGroupOut]() {
-			processFamilyTask(family_id, family_genes, species, adjacency, edges,
-			                 speciesTree, S, aggregator, orthoGroupOut);
+		family_futures.push_back(family_pool.enqueue([family_id, family_genes,
+		                                              &species_ref, &adjacency_ref,
+		                                              &edges_ref, &speciesTree_ref,
+		                                              S_val, &aggregator, &orthoGroupOut]() {
+			processFamilyTask(family_id, family_genes, species_ref, adjacency_ref, edges_ref,
+			                 speciesTree_ref, S_val, aggregator, orthoGroupOut);
 		}));
 	}
 
