@@ -45,11 +45,17 @@ void DFS_Local(string cur,
 {
 	group_local.push_back(cur);
 	visited_local[cur]=1;
-	for(int i=0; i<adjacency.at(cur).size(); i++)
+
+	// Check if gene has adjacency entries before accessing
+	auto it = adjacency.find(cur);
+	if(it != adjacency.end())
 	{
-		string next=adjacency.at(cur)[i];
-		if(visited_local.count(next)==0)
-			DFS_Local(next, visited_local, group_local, adjacency);
+		for(int i=0; i<it->second.size(); i++)
+		{
+			string next=it->second[i];
+			if(visited_local.count(next)==0)
+				DFS_Local(next, visited_local, group_local, adjacency);
+		}
 	}
 }
 
@@ -66,7 +72,14 @@ void Partition_Local(const vector<string>& group_local,
 
 	for(int i=0; i<group_local.size(); i++)
 	{
-		int sp=species.at(group_local[i]);
+		// Check if gene has species mapping
+		auto sp_it = species.find(group_local[i]);
+		if(sp_it == species.end())
+		{
+			// Gene not in species map - skip it
+			continue;
+		}
+		int sp = sp_it->second;
 		vector<string> tmp;
 		tmp.push_back(group_local[i]);
 		v[sp].push_back(tmp);
@@ -152,9 +165,13 @@ void Partition_Local(const vector<string>& group_local,
 		{
 			if(stack[0][i][j]!="")
 			{
-				int sp = species.at(stack[0][i][j]);
-				trees[i][sp]='1';
-				treeGeneName[i][sp]=stack[0][i][j];
+				auto sp_it = species.find(stack[0][i][j]);
+				if(sp_it != species.end())
+				{
+					int sp = sp_it->second;
+					trees[i][sp]='1';
+					treeGeneName[i][sp]=stack[0][i][j];
+				}
 			}
 		}
 		for(int j=0; j<speciesTree.size(); j++) if(speciesTree[j]=='N')
