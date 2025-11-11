@@ -189,7 +189,36 @@ class TreeAnalysis
 					outfile<<*j<<"\t";
 				outfile<<endl;
 			}
-	
+
+		}
+
+		// Thread-safe version: writes to stringstream buffer instead of file
+		void printOrthoGroups_Buffer(stringstream& buffer)
+		{
+			set<set<string> > sst;
+
+			for(int i=0; i<N; i++)
+			{
+				findOrthoGroup(Label[i]);
+
+				for(int j=0; j<groups.size(); j++)
+				{
+					set<string> stmp;
+					for(int k=0; k<groups[j].size(); k++)
+						if(geneName[i][groups[j][k]]!="")
+							stmp.insert(geneName[i][groups[j][k]]);
+					sst.insert(stmp);
+				}
+			}
+
+			for(set<set<string> >::iterator it=sst.begin(); it!=sst.end(); it++)
+			{
+				if((*it).size()<2) continue;
+				for(set<string>::iterator j=(*it).begin(); j!=(*it).end(); j++)
+					buffer<<*j<<"\t";
+				buffer<<endl;
+			}
+
 		}
 
 		void printDetailedAnalysis()
